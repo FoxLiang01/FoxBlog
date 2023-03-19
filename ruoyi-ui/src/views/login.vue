@@ -1,45 +1,56 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">若依后台管理系统</h3>
-      <el-form-item prop="username">
+      <h1 class="title-cn">欢迎来到狐狸洞 UwU</h1>
+      <h2 class="title-en">Welcome to The FoxHole</h2>
+
+      <el-form-item prop="username" class="input-box" @hover="input">
+        <i class="ri-mail-line icon"></i>
         <el-input
           v-model="loginForm.username"
           type="text"
           auto-complete="off"
-          placeholder="账号"
-        >
-          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
-        </el-input>
+          @input="input"
+        ></el-input>
+        <label class="label" :style="usernameIsEmpty === false? labelStyle : '' ">账号</label>
       </el-form-item>
-      <el-form-item prop="password">
+
+      <el-form-item prop="password" class="input-box" @hover="input">
+        <i class="ri-lock-line icon"></i>
         <el-input
           v-model="loginForm.password"
           type="password"
           auto-complete="off"
-          placeholder="密码"
           @keyup.enter.native="handleLogin"
-        >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
-        </el-input>
+          @input="input"
+          @hover="input"
+        ></el-input>
+        <label class="label" :style="passwordIsEmpty===false? labelStyle:''">密码</label>
       </el-form-item>
-      <el-form-item prop="code" v-if="captchaEnabled">
+
+      <el-form-item prop="code" v-if="captchaEnabled" class="input-box" @hover="input">
         <el-input
           v-model="loginForm.code"
           auto-complete="off"
-          placeholder="验证码"
           style="width: 63%"
           @keyup.enter.native="handleLogin"
-        >
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
-        </el-input>
+          @input="input"
+        ></el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
+        <label class="label" :style="codeIsEmpty===false? labelStyle:'' ">验证码</label>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
-      <el-form-item style="width:100%;">
+
+      <div class="forget">
+        <label>
+          <input type="checkbox" v-model="loginForm.rememberMe">
+          记住密码
+        </label>
+      </div>
+
         <el-button
+          round
           :loading="loading"
           size="medium"
           type="primary"
@@ -55,9 +66,9 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-login-footer">
-      <span>Copyright © 2018-2023 ruoyi.vip All Rights Reserved.</span>
-    </div>
+<!--    <div class="el-login-footer">-->
+<!--      <span>Copyright © 2018-2023 ruoyi.vip All Rights Reserved.</span>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -72,8 +83,8 @@ export default {
     return {
       codeUrl: "",
       loginForm: {
-        username: "admin",
-        password: "admin123",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: ""
@@ -85,14 +96,22 @@ export default {
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" }
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        code: [
+          { required: true, trigger: "blur", message: "请输入验证码" }
+        ]
       },
       loading: false,
       // 验证码开关
-      captchaEnabled: true,
+      captchaEnabled: false,
       // 注册开关
       register: false,
-      redirect: undefined
+      redirect: undefined,
+      usernameIsEmpty:true,
+      passwordIsEmpty:true,
+      codeIsEmpty:true,
+      labelStyle:{
+        top: '-5px'
+      }
     };
   },
   watch: {
@@ -106,6 +125,7 @@ export default {
   created() {
     this.getCode();
     this.getCookie();
+    this.input();
   },
   methods: {
     getCode() {
@@ -128,6 +148,7 @@ export default {
       };
     },
     handleLogin() {
+      console.log(this.loginForm)
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
@@ -150,43 +171,116 @@ export default {
           });
         }
       });
+    },
+    input(){
+      this.usernameIsEmpty = this.loginForm.username === null || this.loginForm.username === "";
+      this.passwordIsEmpty = this.loginForm.password === null || this.loginForm.password === "";
+      this.codeIsEmpty = this.loginForm.code === null || this.loginForm.code === "";
     }
   }
 };
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .login {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url("../assets/images/login-background-01.jpg");
   background-size: cover;
 }
-.title {
-  margin: 0px auto 30px auto;
+.title-cn {
+  margin: 30px auto 20px auto;
   text-align: center;
-  color: #707070;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: #324431 5px 5px 5px;
+}
+
+.title-en {
+  margin: 10px auto 50px auto;
+  text-align: center;
+  font-weight: normal;
+  color: #ffffff;
+  text-shadow: #324431 5px 5px 5px;
 }
 
 .login-form {
-  border-radius: 6px;
-  background: #ffffff;
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 50px;
+  backdrop-filter: blur(7px);
   width: 400px;
   padding: 25px 25px 5px 25px;
+
+  .input-box{
+    position: relative;
+    margin: 30px 0;
+    border-bottom: 2px solid #fff;
+    width: 100%;
+
+    :hover~label{
+      top:-5px;
+    }
+
+    label{
+      position: absolute;
+      top: 50%;
+      left: 5px;
+      transform: translateY(-50%);
+      color: #fff;
+      font-size: 1.2em;
+      pointer-events: none;
+      transition: .5s;
+    }
+
+    input{
+      width: 100%;
+      height: 50px;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 1em;
+      padding:0 35px 0 5px;
+      color: #fff;
+    }
+  }
+
+  .icon{
+    position: absolute;
+    right: 8px;
+    font-size: 1.5em;
+    color: #ffffff;
+  }
+
+  .el-input__inner{
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #fff;
+  }
+
   .el-input {
     height: 38px;
     input {
       height: 38px;
     }
   }
-  .input-icon {
-    height: 39px;
-    width: 14px;
-    margin-left: 2px;
+}
+
+.forget{
+  margin: 10px auto 0 auto;
+  font-size: .9em;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+
+  label input{
+    margin-right: 3px;
+    accent-color: #8cc980;
   }
 }
+
 .login-tip {
   font-size: 13px;
   text-align: center;
@@ -201,6 +295,11 @@ export default {
     vertical-align: middle;
   }
 }
+
+.el-form-item__error{
+  color: #ffffff;
+}
+
 .el-login-footer {
   height: 40px;
   line-height: 40px;
@@ -216,4 +315,17 @@ export default {
 .login-code-img {
   height: 38px;
 }
+
+.el-button--primary{
+  background-color: transparent;
+  border-color: #ffffff;
+  transition: all 0.5s ease-out;
+  margin:20px auto 30px auto;
+}
+.el-button--primary:hover,
+.el-button--primary:focus{
+  background: #8cc980;
+  border-color: #8cc980;
+}
+
 </style>

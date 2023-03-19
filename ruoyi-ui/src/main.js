@@ -3,6 +3,8 @@ import Vue from 'vue'
 import Cookies from 'js-cookie'
 
 import Element from 'element-ui'
+import 'boxicons'
+import 'remixicon/fonts/remixicon.css'
 import './assets/styles/element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
